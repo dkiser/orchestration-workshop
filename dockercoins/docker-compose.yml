@@ -24,10 +24,10 @@ hasher:
 
 webui:
     build: webui
-    extra_hosts:
-        redis: 54.69.169.125
-    #links:
-    #  - redis
+    #extra_hosts:
+    #    redis: 54.69.169.125
+    links:
+      - redis
     ports:
       - "8000:80"
     #volumes:
@@ -35,14 +35,17 @@ webui:
 
 #redis:
 #    image: redis
+redis:
+  image: jpetazzo/hamba
+  command: 6379 54.69.169.125 32768
 
 worker:
     build: worker
-    extra_hosts:
-        redis: 54.69.169.125
+    #extra_hosts:
+    #    redis: 54.69.169.125
     links:
       # alias rng0 to be linked to rng inside the container (maps hostname)
       - rng0:rng
       - hasher
-      #- redis
+      - redis
 
