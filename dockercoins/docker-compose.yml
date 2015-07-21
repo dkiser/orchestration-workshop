@@ -1,7 +1,21 @@
-rng:
-    build: rng
+rng0:
+    image: jpetazzo/hamba
+    links:
+      - rng1
+      - rng2
+      - rng3
+    command: 80 rng1 80 rng2 80 rng3 80
     ports:
       - "8001:80"
+
+rng1:
+  build: rng
+
+rng2:
+  build: rng
+
+rng3:
+  build: rng
 
 hasher:
     build: hasher
@@ -10,20 +24,25 @@ hasher:
 
 webui:
     build: webui
-    links:
-      - redis
+    extra_hosts:
+        redis: 54.69.169.125
+    #links:
+    #  - redis
     ports:
       - "8000:80"
-    volumes:
-      - "webui/files/:/files/"
+    #volumes:
+    #  - "webui/files/:/files/"
 
-redis:
-    image: redis
+#redis:
+#    image: redis
 
 worker:
     build: worker
+    extra_hosts:
+        redis: 54.69.169.125
     links:
-      - rng
+      # alias rng0 to be linked to rng inside the container (maps hostname)
+      - rng0:rng
       - hasher
-      - redis
+      #- redis
 
